@@ -1,0 +1,10 @@
+using UnityEngine;
+
+public class WhiteScreen : MonoBehaviour
+{
+    void Start()
+    {
+        // Đặt màu nền của Camera thành màu trắng
+        Camera.main.backgroundColor = Color.white;
+    }
+}
