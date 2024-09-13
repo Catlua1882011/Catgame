@@ -1,10 +1,18 @@
 using UnityEngine;
 
-public class WhiteScreen : MonoBehaviour
+public class TankController : MonoBehaviour
 {
-    void Start()
+    public float moveSpeed = 5f; // Tốc độ di chuyển của xe tăng
+    public float rotateSpeed = 100f; // Tốc độ xoay của xe tăng
+
+    void Update()
     {
-        // Đặt màu nền của Camera thành màu trắng
-        Camera.main.backgroundColor = Color.white;
+        // Điều khiển di chuyển tiến/lùi
+        float move = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
+        transform.Translate(0, 0, move);
+
+        // Điều khiển xoay trái/phải
+        float rotate = Input.GetAxis("Horizontal") * rotateSpeed * Time.deltaTime;
+        transform.Rotate(0, rotate, 0);
     }
 }
