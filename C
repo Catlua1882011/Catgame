@@ -1,0 +1,227 @@
+local FlurioreLib = {}
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- UI Settings
+local Settings = {
+    Theme = {
+        MainColor = Color3.fromRGB(255, 0, 255),
+        BackgroundColor = Color3.fromRGB(20, 20, 25),
+        SectionColor = Color3.fromRGB(25, 25, 30),
+        AccentColor = Color3.fromRGB(30, 30, 35),
+        TextColor = Color3.fromRGB(255, 255, 255),
+        ElementColor = Color3.fromRGB(35, 35, 40)
+    },
+    Animation = {
+        TweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad),
+        NotifyTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad)
+    }
+}
+
+-- Notification System
+function FlurioreLib:MakeNotify(options)
+    local Notify = Instance.new("ScreenGui")
+    local NotifyFrame = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
+    local Title = Instance.new("TextLabel")
+    local Description = Instance.new("TextLabel")
+    local Content = Instance.new("TextLabel")
+    
+    Notify.Name = "FlurioreNotify"
+    Notify.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    
+    NotifyFrame.Name = "NotifyFrame"
+    NotifyFrame.Size = UDim2.new(0, 300, 0, 100)
+    NotifyFrame.Position = UDim2.new(1, 20, 0.8, 0)
+    NotifyFrame.BackgroundColor3 = Settings.Theme.BackgroundColor
+    NotifyFrame.Parent = Notify
+    
+    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.Parent = NotifyFrame
+    
+    Title.Name = "Title"
+    Title.Size = UDim2.new(1, -20, 0, 25)
+    Title.Position = UDim2.new(0, 10, 0, 5)
+    Title.BackgroundTransparency = 1
+    Title.Text = options.Title
+    Title.TextColor3 = options.Color or Settings.Theme.MainColor
+    Title.TextSize = 16
+    Title.Font = Enum.Font.GothamBold
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = NotifyFrame
+    
+    Description.Name = "Description"
+    Description.Size = UDim2.new(1, -20, 0, 20)
+    Description.Position = UDim2.new(0, 10, 0, 30)
+    Description.BackgroundTransparency = 1
+    Description.Text = options.Description
+    Description.TextColor3 = Settings.Theme.TextColor
+    Description.TextSize = 14
+    Description.Font = Enum.Font.Gotham
+    Description.TextXAlignment = Enum.TextXAlignment.Left
+    Description.Parent = NotifyFrame
+    
+    Content.Name = "Content"
+    Content.Size = UDim2.new(1, -20, 0, 40)
+    Content.Position = UDim2.new(0, 10, 0, 55)
+    Content.BackgroundTransparency = 1
+    Content.Text = options.Content
+    Content.TextColor3 = Settings.Theme.TextColor
+    Content.TextSize = 14
+    Content.Font = Enum.Font.Gotham
+    Content.TextXAlignment = Enum.TextXAlignment.Left
+    Content.TextWrapped = true
+    Content.Parent = NotifyFrame
+    
+    -- Animation
+    TweenService:Create(NotifyFrame, Settings.Animation.NotifyTweenInfo, {
+        Position = UDim2.new(1, -320, 0.8, 0)
+    }):Play()
+    
+    task.delay(options.Time, function()
+        TweenService:Create(NotifyFrame, Settings.Animation.NotifyTweenInfo, {
+            Position = UDim2.new(1, 20, 0.8, 0)
+        }):Play()
+        
+        task.delay(0.5, function()
+            Notify:Destroy()
+        end)
+    end)
+end
+
+-- Main GUI System
+function FlurioreLib:MakeGui(options)
+    local GUI = {}
+    
+    -- Main Frame Setup
+    local ScreenGui = Instance.new("ScreenGui")
+    local MainFrame = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
+    local TabContainer = Instance.new("ScrollingFrame")
+    local TabContainerLayout = Instance.new("UIListLayout")
+    local ContentContainer = Instance.new("Frame")
+    local TopBar = Instance.new("Frame")
+    local PlayerInfo = Instance.new("Frame")
+    
+    ScreenGui.Name = "FlurioreGUI"
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    
+    MainFrame.Name = "MainFrame"
+    MainFrame.Size = UDim2.new(0, 800, 0, 500)
+    MainFrame.Position = UDim2.new(0.5, -400, 0.5, -250)
+    MainFrame.BackgroundColor3 = Settings.Theme.BackgroundColor
+    MainFrame.Parent = ScreenGui
+    
+    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.Parent = MainFrame
+    
+    -- Make GUI draggable
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+    
+    TopBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    -- Create Tab Function
+    function GUI:CreateTab(tabOptions)
+        local Tab = {}
+        
+        -- Tab Button
+        local TabButton = Instance.new("TextButton")
+        local TabIcon = Instance.new("ImageLabel")
+        local TabTitle = Instance.new("TextLabel")
+        
+        TabButton.Name = tabOptions.Name .. "Tab"
+        TabButton.Size = UDim2.new(1, -10, 0, 40)
+        TabButton.BackgroundColor3 = Settings.Theme.ElementColor
+        TabButton.Text = ""
+        TabButton.Parent = TabContainer
+        
+        local UICorner = Instance.new("UICorner")
+        UICorner.CornerRadius = UDim.new(0, 6)
+        UICorner.Parent = TabButton
+        
+        TabIcon.Size = UDim2.new(0, 20, 0, 20)
+        TabIcon.Position = UDim2.new(0, 10, 0.5, -10)
+        TabIcon.BackgroundTransparency = 1
+        TabIcon.Image = tabOptions.Icon
+        TabIcon.Parent = TabButton
+        
+        TabTitle.Size = UDim2.new(1, -40, 1, 0)
+        TabTitle.Position = UDim2.new(0, 40, 0, 0)
+        TabTitle.BackgroundTransparency = 1
+        TabTitle.Text = tabOptions.Name
+        TabTitle.TextColor3 = Settings.Theme.TextColor
+        TabTitle.TextSize = 14
+        TabTitle.Font = Enum.Font.GothamSemibold
+        TabTitle.TextXAlignment = Enum.TextXAlignment.Left
+        TabTitle.Parent = TabButton
+        
+        -- Tab Content
+        local TabContent = Instance.new("ScrollingFrame")
+        TabContent.Name = tabOptions.Name .. "Content"
+        TabContent.Size = UDim2.new(1, 0, 1, 0)
+        TabContent.BackgroundTransparency = 1
+        TabContent.ScrollBarThickness = 2
+        TabContent.Visible = false
+        TabContent.Parent = ContentContainer
+        
+        -- Section Function
+        function Tab:AddSection(sectionTitle)
+            local Section = {}
+            
+            local SectionFrame = Instance.new("Frame")
+            local SectionTitle = Instance.new("TextLabel")
+            local ElementContainer = Instance.new("Frame")
+            local ElementLayout = Instance.new("UIListLayout")
+            
+            -- Add elements functions (Toggle, Button, etc.)
+            function Section:AddToggle(toggleOptions)
+                local Toggle = {}
+                -- Toggle implementation
+                return Toggle
+            end
+            
+            function Section:AddButton(buttonOptions)
+                local Button = {}
+                -- Button implementation
+                return Button
+            end
+            
+            function Section:AddParagraph(paragraphOptions)
+                local Paragraph = {}
+                -- Paragraph implementation
+                return Paragraph
+            end
+            
+            return Section
+        end
+        
+        return Tab
+    end
+    
+    return GUI
+end
+
+return FlurioreLib
