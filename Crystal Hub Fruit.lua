@@ -1,34 +1,36 @@
 
-if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
-    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
-        repeat wait()
-            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
-                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
-            end
-        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
-    end
-end
-
-wait(0.5)
-
-if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
-    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
-        repeat wait()
-            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
-                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
-            end
-        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
-    end
-end
-
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
+
+if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
+    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
+        repeat wait()
+            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
+            end
+        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
+    end
+end
+
+wait(2)
+
+if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
+    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
+        repeat wait()
+            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
+            end
+        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
+    end
+end
+
 local cg = game:GetService("CoreGui")
 local player = game:GetService("Players").LocalPlayer
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 getgenv().Setting = {
     ["Delay Hop"] = 1,
     ["Webhook"] = {
@@ -53,6 +55,7 @@ getgenv().Setting = {
 if cg:FindFirstChild('Crystal hub') then
     cg:FindFirstChild('Crystal hub'):Destroy()
 end
+
 local C = {
     UI = {},
     Data = {},
@@ -802,13 +805,13 @@ C.Fruit.CollectPendingFruits = function()
                 C.Fruit.IsCollecting = true
                 C.Fruit.CollectFruits()
                 C.Webhook.SendFruit(fruitName)
-                C.Func.UpdateStatus("Collecting: " .. fruitName)
+                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
                 wait(2)
                 C.Fruit.IsCollecting = false
             else
                 C.Fruit.IsCollecting = true
                 C.Fruit.CollectFruits()
-                C.Func.UpdateStatus("Collecting: " .. fruitName)
+                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
                 wait(2)
                 C.Fruit.IsCollecting = false
             end
@@ -2027,7 +2030,7 @@ C.Fruit.CollectPendingFruits = function()
     
     Crystal:Notify({
         ["Title"] = "Crystal Hub",
-        ["Content"] = "Collecting fruits...",
+        ["Content"] = "Collecting pending fruits...",
         ["Logo"] = "rbxassetid://129781592728096",
         ["Time"] = 3,
         ["Delay"] = 2
@@ -2041,11 +2044,11 @@ C.Fruit.CollectPendingFruits = function()
             if not C.Fruit.CheckFruitInInventory(fruitServerId) then
                 topos(fruitData.handle.CFrame)
                 C.Webhook.SendFruit(fruitName)
-                C.Func.UpdateStatus("Collecting : " .. fruitName)
+                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
                 wait(2)
             else
                 topos(fruitData.handle.CFrame)
-                C.Func.UpdateStatus("Collecting : " .. fruitName)
+                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
                 wait(2)
             end
         end
