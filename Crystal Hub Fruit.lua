@@ -1,9 +1,8 @@
 
-local thelocal = LocalPlayer
 World1 = game.PlaceId == 2753915549
 World2 = game.PlaceId == 4442272183
 World3 = game.PlaceId == 7449423635
-getgenv().Team = "Marines
+getgenv().Team = "Marines"
 Sea = World1 or World2 or World3 or plr:Kick("Games Not Supported ")
 if getgenv().Team == "Marines" then
     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Marines")
@@ -28,7 +27,6 @@ repeat
         end
     end
 until game:GetService("Players").LocalPlayer.Team
-	
 local plr = LocalPlayer
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local TweenService = game:GetService("TweenService")
