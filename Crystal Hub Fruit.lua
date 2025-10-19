@@ -1,23 +1,24 @@
 
 if game.PlaceId == 2753915549 then
-        World1 = true
-    elseif game.PlaceId == 4442272183 then
-        World2 = true
-    elseif game.PlaceId == 7449423635 then
-        World3 = true
-    else
-    game:GetService("Players").LocalPlayer:Kick("hi")
-  end
-  local plr = LocalPlayer
+    World1 = true
+elseif game.PlaceId == 4442272183 then
+    World2 = true
+elseif game.PlaceId == 7449423635 then
+    World3 = true
+else
+    game:GetService("Players").LocalPlayer:Kick("Invalid Place ID")
+end
+
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
-local cg = game:GetService("CoreGui")
-local player = game:GetService("Players").LocalPlayer
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+local Players = game:GetService("Players")
+
+
+
 getgenv().Setting = {
     ["Delay Hop"] = 1,
     ["Webhook"] = {
@@ -27,7 +28,7 @@ getgenv().Setting = {
         ["Webhook When Attack Raid Castle"] = true,
         ["Ping Discord"] = {
             ["Enabled"] = true, 
-            ["Id Discord/Everyone"] = "27272728"
+            ["Id Discord/Everyone"] = "272727282"
         },
         ["Enabled"] = true
     },
@@ -39,18 +40,24 @@ getgenv().Setting = {
     }
 }
 
- getgenv().Team = "Marines"
+getgenv().Team = "Marines"
+
 if getgenv().Team == "Marines" then
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Marines")
+    ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
 elseif getgenv().Team == "Pirates" then
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
+    ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
 end
 
 repeat
     task.wait(1)
-    if game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("ChooseTeam", true) and game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("ChooseTeam", true).Visible and game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UIController", true) then
+    
+    local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+    local chooseTeam = playerGui:FindFirstChild("ChooseTeam", true)
+    local uiController = playerGui:FindFirstChild("UIController", true)
+    
+    if chooseTeam and chooseTeam.Visible and uiController then
         for _, v in pairs(getgc(true)) do
-            if type(v) == "function" and getfenv(v).script == game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UIController", true) then
+            if type(v) == "function" and getfenv(v).script == uiController then
                 local constant = getconstants(v)
                 pcall(function()
                     if (constant[1] == "Pirates" or constant[1] == "Marines") and #constant == 1 then
@@ -62,6 +69,7 @@ repeat
             end
         end
     end
+until LocalPlayer.Team
 until game:GetService("Players").LocalPlayer.Team
 if cg:FindFirstChild('Crystal hub') then
     cg:FindFirstChild('Crystal hub'):Destroy()
