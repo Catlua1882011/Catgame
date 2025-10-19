@@ -1,4 +1,26 @@
 
+if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
+    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
+        repeat wait()
+            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
+            end
+        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
+    end
+end
+
+wait(0.5)
+
+if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
+    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
+        repeat wait()
+            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
+                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
+            end
+        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
+    end
+end
+
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -7,29 +29,30 @@ local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 local cg = game:GetService("CoreGui")
 local player = game:GetService("Players").LocalPlayer
-if cg:FindFirstChild('Crystal hub') then
-    cg:FindFirstChild('Crystal hub'):Destroy()
-end
 getgenv().Setting = {
     ["Delay Hop"] = 1,
     ["Webhook"] = {
-        ["url"] = "",
-        ["Webhook Target Fruit"] = nille,
-        ["Webhook When Attack Factory"] = nill,
-        ["Webhook When Attack Raid Castle"] = nill,
+        ["url"] = "https://discord.com/api/webhooks/1377092717712113767/vGPO_a8cSo3gGd9KF5Ga_3hXlAEecvD3_B1d3BzD7b8XYEwBK5O63xZHns_-gFzPf1eV",
+        ["Webhook Target Fruit"] = true,
+        ["Webhook When Attack Factory"] = true,
+        ["Webhook When Attack Raid Castle"] = true,
         ["Ping Discord"] = {
-            ["Enabled"] = nill, 
-            ["Id Discord/Everyone"] = ""
+            ["Enabled"] = true, 
+            ["Id Discord/Everyone"] = "27272728"
         },
-        ["Enabled"] = nill
+        ["Enabled"] = true
     },
-    ["Auto Farm Fruit"] = nill,
+    ["Auto Farm Fruit"] = true,
     ["Attacking"] = {
-        ["Weapon"] = "",
-        ["Raid Castle"] = nill,
-        ["Factory"] = nill,
+        ["Weapon"] = "Melee",
+        ["Raid Castle"] = true,
+        ["Factory"] = true,
     }
 }
+
+if cg:FindFirstChild('Crystal hub') then
+    cg:FindFirstChild('Crystal hub'):Destroy()
+end
 local C = {
     UI = {},
     Data = {},
@@ -2428,7 +2451,7 @@ spawn(function()
         end
     end
 end)
-_G.JumpAuto = false
+_G.JumpAuto = true
 
 spawn(function()
     while wait(0.2) do
