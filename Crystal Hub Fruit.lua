@@ -1,21 +1,41 @@
 
+local thelocal = LocalPlayer
+World1 = game.PlaceId == 2753915549
+World2 = game.PlaceId == 4442272183
+World3 = game.PlaceId == 7449423635
+getgenv().Team = "Marines
+Sea = World1 or World2 or World3 or plr:Kick("Games Not Supported ")
+if getgenv().Team == "Marines" then
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Marines")
+elseif getgenv().Team == "Pirates" then
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
+end
+
+repeat
+    task.wait(1)
+    if game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("ChooseTeam", true) and game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("ChooseTeam", true).Visible and game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UIController", true) then
+        for _, v in pairs(getgc(true)) do
+            if type(v) == "function" and getfenv(v).script == game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("UIController", true) then
+                local constant = getconstants(v)
+                pcall(function()
+                    if (constant[1] == "Pirates" or constant[1] == "Marines") and #constant == 1 then
+                        if constant[1] == getgenv().Team then
+                            v(getgenv().Team)
+                        end
+                    end
+                end)
+            end
+        end
+    end
+until game:GetService("Players").LocalPlayer.Team
+	
+local plr = LocalPlayer
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
-
-if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then
-    if game.Players.LocalPlayer.PlayerGui["Main (minimal)"]:FindFirstChild("ChooseTeam") then
-        repeat wait()
-            if game.Players.LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)").ChooseTeam.Visible then
-                game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam","Pirates")
-            end
-        until game.Players.LocalPlayer.Team ~= nil and game:IsLoaded()
-    end
-end
-Wait(0.8)
 local cg = game:GetService("CoreGui")
 local player = game:GetService("Players").LocalPlayer
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
@@ -711,13 +731,6 @@ function Crystal:Notify(NotifyConfig)
     end)
     return NotifyFunc
 end
-
-local plr = LocalPlayer
-local thelocal = LocalPlayer
-World1 = game.PlaceId == 2753915549
-World2 = game.PlaceId == 4442272183
-World3 = game.PlaceId == 7449423635
-Sea = World1 or World2 or World3 or plr:Kick("Games Not Supported ")
 
 local PlaceID = game.PlaceId
 local AllIDs = {}
