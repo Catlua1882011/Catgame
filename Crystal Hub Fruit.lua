@@ -365,7 +365,6 @@ C.Data.Inv = {
 }
 
 C.Fruit.PendingFruits = {}
-C.Fruit.IsCollecting = false
 
 C.Webhook.SentFruits = {}
 
@@ -413,9 +412,9 @@ C.Func.UpdInv = function()
     C.Data.Inv.Over1M, C.Data.Inv.Under1M = C.Func.ChkFruits()
     
     if C.UI.ContentText then
-        C.UI.ContentText.Text = "<font size='19' color='rgb(255,215,0)'><b>Fruits Over 1M Beli:</b></font>\n" .. 
+        C.UI.ContentText.Text = "<font size='19' color='rgb(255,100,100)'><b>Fruits Over 1M Beli:</b></font>\n" .. 
                     (C.Data.Inv.Over1M or "None") .. 
-                    "\n\n<font size='19' color='rgb(144,238,144)'><b>Fruits Under 1M Beli:</b></font>\n" .. 
+                    "\n\n<font size='19' color='rgb(255,100,100)'><b>Fruits Under 1M Beli:</b></font>\n" .. 
                     (C.Data.Inv.Under1M or "None")
     end
 end
@@ -775,7 +774,7 @@ end
 
 local function FruitIdToName(FruitId) 
     local ParserResult = string.match(FruitId, "(((%u)%-?)([^-.]+))$")
-    return ParserResult .. " Fruit"
+    return ParserResult 
 end
 
 C.Fruit.CollectFruits = function()
@@ -1422,7 +1421,20 @@ spawn(function()
         end)
     end
 end)
-
+RemoveDamage = true
+	spawn(function()
+		while wait() do
+			pcall(function()
+				if RemoveDamage then
+					replicated.Assets.GUI.DamageCounter.Enabled = false
+					plr.PlayerGui.Notifications.Enabled = false
+				else
+					replicated.Assets.GUI.DamageCounter.Enabled = true
+					plr.PlayerGui.Notifications.Enabled = true
+				end
+			end)
+		end
+	end)      
 function AutoHaki()
     if not game.Players.LocalPlayer.Character:FindFirstChild("HasBuso") then
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
@@ -1584,10 +1596,6 @@ spawn(function()
         end
     end
 end)
-
-local factoryNotified = false
-local raidCastleNotified = false
-
 spawn(function()
     while wait(0.1) do
         if getgenv().Setting["Auto Farm Fruit"] then
@@ -1826,7 +1834,6 @@ spawn(function()
                         end
                     end
                     
-                    local enemiesRemaining = false
                     for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
                         if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                             if (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 2000 then
