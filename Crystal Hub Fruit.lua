@@ -748,11 +748,6 @@ end
 
 local plr = LocalPlayer
 local thelocal = LocalPlayer
-World1 = game.PlaceId == 2753915549
-World2 = game.PlaceId == 4442272183
-World3 = game.PlaceId == 7449423635
-Sea = World1 or World2 or World3 or plr:Kick("Games Not Supported ")
-
 local PlaceID = game.PlaceId
 local AllIDs = {}
 local foundAnything = ""
@@ -812,7 +807,7 @@ C.Fruit.CollectPendingFruits = function()
     
     Crystal:Notify({
         ["Title"] = "Crystal Hub",
-        ["Content"] = "Collecting pending fruits...",
+        ["Content"] = "Collecting fruits...",
         ["Logo"] = "rbxassetid://129781592728096",
         ["Time"] = 3,
         ["Delay"] = 2
@@ -827,13 +822,13 @@ C.Fruit.CollectPendingFruits = function()
                 C.Fruit.IsCollecting = true
                 C.Fruit.CollectFruits()
                 C.Webhook.SendFruit(fruitName)
-                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
+                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
                 C.Fruit.IsCollecting = false
             else
                 C.Fruit.IsCollecting = true
                 C.Fruit.CollectFruits()
-                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
+                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
                 C.Fruit.IsCollecting = false
             end
@@ -900,7 +895,7 @@ C.Func.CheckRaidCastleActive = function()
 end
 
 function shuffle(tbl)
-    for i = #tbl, 2, -1 do
+    for i = #tbl, 9, -1 do
         local j = math.random(i)
         tbl[i], tbl[j] = tbl[j], tbl[i]
     end
@@ -921,7 +916,7 @@ function TPReturner()
     local validServers = {}
     
     for _, v in ipairs(Site.data) do
-        if v.playing >= 2 and v.playing <= 11 and v.playing < v.maxPlayers then
+        if v.playing >= 3 and v.playing <= 11 and v.playing < v.maxPlayers then
             table.insert(validServers, v)
         end
     end
@@ -947,6 +942,8 @@ function Hop()
     AllIDs = {}
     foundAnything = ""
     
+    C.Func.UpdateStatus("Hop Server!", "Searching...")
+    
     Crystal:Notify({
         ["Title"] = "Crystal Hub",
         ["Content"] = "Starting server hop...",
@@ -964,6 +961,13 @@ function Hop()
         wait(1)
     end
 end
+
+game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+    if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+        TeleportService:Teleport(game.PlaceId)
+    end
+end)
+
 
 function getCharacter()
     if not LocalPlayer.Character then
@@ -1180,6 +1184,246 @@ function StoreFruit()
 end
 
 
+function islive()
+    local plr = game.Players.LocalPlayer
+    local character = plr.Character or plr.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    return humanoid
+end
+
+if getgenv().noclipsetup ~= true then
+    spawn(function()
+        RunService.Stepped:Connect(function()
+            if islive() then
+                if getgenv().noclip then
+                    for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+                        if v:IsA("BasePart") then
+                            v.CanCollide = false
+                        end
+                    end
+
+                    if not islive() then
+                        getgenv().noclip = false
+                    end
+                end
+                if not LocalPlayer.Character.Head:FindFirstChild("BodyVelocity") and getgenv().noclip then
+                    local ag = Instance.new("BodyVelocity")
+                    ag.Velocity = Vector3.new(0, 0, 0)
+                    ag.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                    ag.P = 9000
+                    ag.Parent = LocalPlayer.Character.Head
+                    for r, v in pairs(LocalPlayer.Character:GetDescendants()) do
+                        if v:IsA("BasePart") then
+                            v.CanCollide = false
+                        end
+                    end
+                elseif not getgenv().noclip and LocalPlayer.Character.Head:FindFirstChild("BodyVelocity") then
+                    LocalPlayer.Character.Head:FindFirstChild("BodyVelocity"):Destroy()
+                end
+            end
+        end)
+    end)
+    getgenv().noclipsetup = true
+end
+
+spawn(function()
+    while wait() do
+        pcall(function()
+            if nonotify then
+                replicated.Assets.GUI.DamageCounter.Enabled = false
+                plr.PlayerGui.Notifications.Enabled = false
+            else
+                replicated.Assets.GUI.DamageCounter.Enabled = true
+                plr.PlayerGui.Notifications.Enabled = true
+            end
+        end)
+    end
+end)
+
+local usebypassteleport = true
+local farmfishv2 = false
+
+function CheckNearestTeleporter(vcs)
+    local vcspos = vcs.Position
+    local min = math.huge
+    local min2 = math.huge
+    local placeId = game.PlaceId
+    local OldWorld, NewWorld, ThreeWorld
+    if placeId == 2753915549 then
+        OldWorld = true
+    elseif placeId == 4442272183 then
+        NewWorld = true
+    elseif placeId == 7449423635 then
+        ThreeWorld = true
+    end
+    
+    local TableLocations = {}
+    
+    if ThreeWorld then
+        TableLocations = {
+            ["Caslte On The Sea"] = Vector3.new(-5058.77490234375, 314.5155029296875, -3155.88330078125),
+            ["Hydra"] = Vector3.new(5756.83740234375, 610.4240112304688, -253.9253692626953),
+            ["Mansion"] = Vector3.new(-12463.8740234375, 374.9144592285156, -7523.77392578125),
+            ["Temple of Time"] = Vector3.new(28282.5703125, 14896.8505859375, 105.1042709350586)
+        }
+    elseif NewWorld then
+        TableLocations = {
+            ["122"] = Vector3.new(923.21252441406, 126.9760055542, 32852.83203125),
+            ["3032"] = Vector3.new(-6508.5581054688, 150.034996032715, -132.83953857422)
+        }
+    elseif OldWorld then
+        TableLocations = {
+            ["1"] = Vector3.new(-7894.6201171875, 5545.49169921875, -380.2467346191406),
+            ["2"] = Vector3.new(-4607.82275390625, 872.5422973632812, -1667.556884765625),
+            ["3"] = Vector3.new(61163.8515625, 11.759522438049316, 1819.7841796875),
+            ["4"] = Vector3.new(3876.280517578125, 35.10614013671875, -1939.3201904296875)
+        }
+    end
+    
+    local TableLocations2 = {}
+    if TableLocations then
+        for i, v in pairs(TableLocations) do
+            TableLocations2[i] = (v - vcspos).Magnitude
+        end
+        for i, v in pairs(TableLocations2) do
+            if v < min then
+                min = v
+                min2 = v
+            end
+        end
+        local choose
+        for i, v in pairs(TableLocations2) do
+            if v <= min then
+                choose = TableLocations[i]
+            end
+        end
+        local min3 = (vcspos - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+        if min2 <= min3 then
+            return choose
+        end
+    end
+    return false
+end
+
+function requestEntrance(vector3)
+    local args = {
+        [1] = "requestEntrance",
+        [2] = vector3
+    }
+    ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer(unpack(args))
+end
+
+getgenv().Tweento = function(targetCFrame)
+    getgenv().noclip = true
+    if
+        LocalPlayer and LocalPlayer.Character and
+        LocalPlayer.Character:FindFirstChild("Humanoid") and
+        LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and
+        LocalPlayer.Character.Humanoid.Health > 0 and
+        LocalPlayer.Character.HumanoidRootPart
+    then
+        if getgenv().TweenSpeed == nil then
+            getgenv().TweenSpeed = 350
+        end
+        if LocalPlayer.Character.Humanoid.Sit and not getgenv().farmfishv2 then
+            getgenv().noclip = false
+            if LocalPlayer.Character.Humanoid.Sit then
+                LocalPlayer.Character.Humanoid.Sit = false
+                canceltween()
+                getgenv().noclip = false
+            end
+        end
+        local targetPos = targetCFrame.Position
+        local Distance =
+            (targetPos - LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position).Magnitude
+
+        local Speed
+        if Distance < 600 then
+            Speed = getgenv().TweenSpeed
+        elseif Distance >= 600 then
+            Speed = getgenv().TweenSpeed
+        end
+        
+        local bmg = CheckNearestTeleporter(targetCFrame)
+        if type(bmg) ~= "boolean" and plr:DistanceFromCharacter(targetPos) >= 1000 then
+            usebypassteleport = true
+            pcall(function()
+                tween:Cancel()
+            end)
+            requestEntrance(bmg)
+            task.wait(1)
+        end
+        
+        spawn(function()
+            if usebypassteleport then
+                task.wait(2)
+                usebypassteleport = false
+            end
+        end)
+        
+        local tweenfunc = {}
+        local tween_s = game:service("TweenService")
+        local info =
+            TweenInfo.new(
+                (targetPos - LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position).Magnitude / 340,
+                Enum.EasingStyle.Linear
+            )
+        local tween =
+            tween_s:Create(
+                LocalPlayer.Character["HumanoidRootPart"],
+                info,
+                { CFrame = targetCFrame }
+            )
+        tween:Play()
+        getgenv().noclip = true
+        function tweenfunc:Stop()
+            tween:Cancel()
+        end
+
+        tween.Completed:Wait()
+        LocalPlayer.Character.HumanoidRootPart.CFrame =
+            CFrame.new(
+                LocalPlayer.Character.HumanoidRootPart.CFrame.X,
+                LocalPlayer.Character.HumanoidRootPart.CFrame.Y,
+                LocalPlayer.Character.HumanoidRootPart.CFrame.Z
+            )
+    end
+
+    if not tween then
+        return tween
+    end
+    return tweenfunc
+end
+
+getgenv().canceltween = function()
+    Tweento(plr.Character.HumanoidRootPart.CFrame)
+end
+
+local attempt = 0
+spawn(function()
+    while wait() do
+        pcall(function()
+            local starttime = tick()
+            local oldpos = plr.Character.HumanoidRootPart.CFrame.p
+            delay(0.1, function()
+                if tick() - starttime >= 0 and (plr.Character.HumanoidRootPart.CFrame.p - oldpos).Magnitude >= 1600 and not usebypassteleport then
+                    if attempt >= 2 then
+                        canceltween()
+                        local tickoldtp = tick()
+                        repeat
+                            wait()
+                            canceltween()
+                            task.wait(1)
+                        until tick() - tickoldtp >= 1
+                        attempt = 0
+                    else
+                        attempt = attempt + 1
+                    end
+                end
+            end)
+        end)
+    end
+end)
 
 function AutoHaki()
     if not game.Players.LocalPlayer.Character:FindFirstChild("HasBuso") then
@@ -1210,7 +1454,7 @@ C.Fruit.CollectPendingFruits = function()
     
     Crystal:Notify({
         ["Title"] = "Crystal Hub",
-        ["Content"] = "Collecting pending fruits...",
+        ["Content"] = "Collecting fruits...",
         ["Logo"] = "rbxassetid://129781592728096",
         ["Time"] = 3,
         ["Delay"] = 2
@@ -1222,13 +1466,13 @@ C.Fruit.CollectPendingFruits = function()
             local fruitServerId = FruitNameToId(fruitName)
             
             if not C.Fruit.CheckFruitInInventory(fruitServerId) then
-                topos(fruitData.handle.CFrame)
+                Tweento(fruitData.handle.CFrame)
                 C.Webhook.SendFruit(fruitName)
-                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
+                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
             else
-                topos(fruitData.handle.CFrame)
-                C.Func.UpdateStatus("Collecting pending: " .. fruitName)
+                Tweento(fruitData.handle.CFrame)
+                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
             end
         end
@@ -1297,7 +1541,6 @@ spawn(function()
     while task.wait() do
         pcall(function()
             if getgenv().Setting["Attacking"]["Factory"] or getgenv().Setting["Attacking"]["Raid Castle"] then
-                r = true
                 if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
                     local Noclip = Instance.new("BodyVelocity")
                     Noclip.Name = "BodyClip"
@@ -1321,7 +1564,6 @@ spawn(function()
                     end
                 end
             else
-                r = false
                 if plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
                     plr.Character.HumanoidRootPart:FindFirstChild("BodyClip"):Destroy()
                 end
@@ -1339,7 +1581,7 @@ spawn(function()
             pcall(function()
                 for i,v in pairs(game.Workspace:GetChildren()) do
                     if string.find(v.Name, "Fruit") and v:FindFirstChild("Handle") then
-                        topos(v.Handle.CFrame)
+                        Tweento(v.Handle.CFrame)
                     end
                 end
             end)
@@ -1518,7 +1760,7 @@ spawn(function()
                                 v.Humanoid.JumpPower = 0
                                 v.Humanoid.WalkSpeed = 0
                                 v.HumanoidRootPart.CanCollide = false
-                                topos(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                Tweento(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
                                 FarmPos = v.HumanoidRootPart.CFrame
                                 MonFarm = v.Name
                                 C.Func.UpdateStatus("Attacking Factory Core")
@@ -1547,13 +1789,13 @@ spawn(function()
                 else
                     if not C.Fruit.CheckFruitInWorkspace() and not isAttackingFactory then
                         repeat 
-                            topos(CFrame.new(448.46756, 199.356781, -441.389252))
+                            Tweento(CFrame.new(448.46756, 199.356781, -441.389252))
                             C.Func.UpdateStatus("Going to Factory")
                             wait()
                         until not getgenv().Setting["Attacking"]["Factory"] or (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - Vector3.new(448.46756, 199.356781, -441.389252)).Magnitude <= 10 or C.Fruit.CheckFruitInWorkspace()
                         
                         if game.ReplicatedStorage:FindFirstChild("Core") and not C.Fruit.CheckFruitInWorkspace() then
-                            topos(game.ReplicatedStorage:FindFirstChild("Core").HumanoidRootPart.CFrame * CFrame.new(5, 10, 2))
+                            Tweento(game.ReplicatedStorage:FindFirstChild("Core").HumanoidRootPart.CFrame * CFrame.new(5, 10, 2))
                         end
                     end
                 end
@@ -1580,7 +1822,7 @@ spawn(function()
                                     AutoHaki()
                                     EquipWeapon(getgenv().Setting["Attacking"]["Weapon"])
                                     v.HumanoidRootPart.CanCollide = false                            
-                                    topos(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                    Tweento(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
                                     C.Func.UpdateStatus("Attacking Raid Castle")
                                 until v.Humanoid.Health <= 0 or not v.Parent or not getgenv().Setting["Attacking"]["Raid Castle"] or C.Fruit.CheckFruitInWorkspace()
                                 
@@ -1634,6 +1876,7 @@ spawn(function()
         end
     end
 end)
+
 _G.JumpAuto = true
 
 spawn(function()
