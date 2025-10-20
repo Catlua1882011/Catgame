@@ -1335,9 +1335,9 @@ getgenv().Tweento = function(targetCFrame)
             (targetPos - LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position).Magnitude
 
         local Speed
-        if Distance < 600 then
+        if Distance < 340 then
             Speed = getgenv().TweenSpeed
-        elseif Distance >= 600 then
+        elseif Distance >= 350 then
             Speed = getgenv().TweenSpeed
         end
         
@@ -1421,20 +1421,7 @@ spawn(function()
         end)
     end
 end)
-RemoveDamage = true
-	spawn(function()
-		while wait() do
-			pcall(function()
-				if RemoveDamage then
-					replicated.Assets.GUI.DamageCounter.Enabled = false
-					plr.PlayerGui.Notifications.Enabled = false
-				else
-					replicated.Assets.GUI.DamageCounter.Enabled = true
-					plr.PlayerGui.Notifications.Enabled = true
-				end
-			end)
-		end
-	end)      
+
 function AutoHaki()
     if not game.Players.LocalPlayer.Character:FindFirstChild("HasBuso") then
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
