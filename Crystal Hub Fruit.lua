@@ -1,4 +1,3 @@
-
 if game.PlaceId == 2753915549 then
     World1 = true
 elseif game.PlaceId == 4442272183 then
@@ -51,7 +50,6 @@ end
 
 repeat
     task.wait(1)
-    
     local playerGui = LocalPlayer:WaitForChild("PlayerGui")
     local chooseTeam = playerGui:FindFirstChild("ChooseTeam", true)
     local uiController = playerGui:FindFirstChild("UIController", true)
@@ -318,6 +316,7 @@ spawn(function()
         end)
     end
 end)
+
 _G.AttackMobs = true
 _G.FastAttack = true
 
@@ -1261,7 +1260,7 @@ C.Func.ChkFruits = function()
     for _, v in pairs(inv) do
         if v.Type == "Blox Fruit" then
             local price = v.Price or v.Value
-                       local name = type(v.Name) == "table" and table.concat(v.Name, ", ") or v.Name
+            local name = type(v.Name) == "table" and table.concat(v.Name, ", ") or v.Name
             local fmt = C.Func.FmtFruit(name)
             local pText = "<font size='15' color='rgb(144,238,144)'> (" .. tostring(price) .. " Beli)</font>"
             
@@ -1633,32 +1632,6 @@ local tween
 local isAttackingFactory = false
 local isAttackingRaidCastle = false
 
-local function Split(str, sep)
-    local result = {}
-    for match in (str .. sep):gmatch("(.-)" .. sep) do
-        table.insert(result, match)
-    end
-    return result
-end
-
-local function FruitNameToId(FruitName) 
-    local Id = Split(FruitName, " ")[1]
-    return Id .. "-" .. Id
-end 
-
-local function FruitIdToName(FruitId) 
-    local ParserResult = string.match(FruitId, "(((%u)%-?)([^-.]+))$")
-    return ParserResult .. " Fruit"
-end
-
-function StoreFruit()
-    for i,v in pairs(thelocal.Backpack:GetChildren()) do
-        if v:IsA("Tool") and string.find(v.Name, "Fruit") then
-            ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit",v:GetAttribute("OriginalName"),v)
-        end
-    end
-end
-
 function AutoHaki()
     if not LocalPlayer.Character:FindFirstChild("HasBuso") then
         ReplicatedStorage.Remotes.CommF_:InvokeServer("Buso")
@@ -1673,32 +1646,18 @@ function EquipWeapon(ToolSe)
     end
 end
 
-C.Fruit.CheckFruitInInventory = function(fruitServerName)
-    local success, inventory = pcall(function()
-        return ReplicatedStorage.Remotes.CommF_:InvokeServer("getInventory")
-    end)
-    
-    if success and inventory then
-        for _, item in pairs(inventory) do
-            if type(item) == "table" and item.Type == "Blox Fruit" then
-                local itemName = type(item.Name) == "table" and table.concat(item.Name, ", ") or item.Name
-                if itemName == fruitServerName then
-                    return true
-                end
-            end
+function StoreFruit()
+    for i,v in pairs(thelocal.Backpack:GetChildren()) do
+        if v:IsA("Tool") and string.find(v.Name, "Fruit") then
+            ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit",v:GetAttribute("OriginalName"),v)
         end
     end
-    
-    return false
 end
 
-C.Fruit.CheckFruitInWorkspace = function()
-    for i, v in pairs(game.Workspace:GetChildren()) do
-        if string.find(v.Name, "Fruit") and v:FindFirstChild("Handle") then
-            return true
-        end
+C.Func.UpdateStatus = function(fruitStatus, collectStatus)
+    if C.UI.S2 then
+        C.UI.S2.Text = "Fruit: " .. (fruitStatus or "...") .. " | Collect: " .. (collectStatus or "...")
     end
-    return false
 end
 
 C.Fruit.GetFruitsInWorkspace = function()
@@ -1709,6 +1668,15 @@ C.Fruit.GetFruitsInWorkspace = function()
         end
     end
     return fruits
+end
+
+C.Fruit.CheckFruitInWorkspace = function()
+    for i, v in pairs(game.Workspace:GetChildren()) do
+        if string.find(v.Name, "Fruit") and v:FindFirstChild("Handle") then
+            return true
+        end
+    end
+    return false
 end
 
 C.Func.CheckFactoryActive = function()
@@ -1727,107 +1695,6 @@ C.Func.CheckRaidCastleActive = function()
         end
     end
     return false
-end
-
-function shuffle(tbl)
-    for i = #tbl, 2, -1 do
-        local j = math.random(i)
-        tbl[i], tbl[j] = tbl[j], tbl[i]
-    end
-end
-
-function TPReturner()
-    local Site
-    if foundAnything == "" then
-        Site = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100"))
-    else
-        Site = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100&cursor=" .. foundAnything))
-    end
-
-    if Site.nextPageCursor then
-        foundAnything = Site.nextPageCursor
-    end
-
-    local validServers = {}
-    
-    for _, v in ipairs(Site.data) do
-        if v.playing >= 3 and v.playing <= 11 and v.playing < v.maxPlayers then
-            table.insert(validServers, v)
-        end
-    end
-    
-    shuffle(validServers)
-
-    for _, v in ipairs(validServers) do
-        local ID = tostring(v.id)
-        if not table.find(AllIDs, ID) then
-            table.insert(AllIDs, ID)
-            wait(1)
-            TeleportService:TeleportToPlaceInstance(PlaceID, ID, LocalPlayer)
-            wait(1)
-            return true
-        end
-    end
-    
-    return false
-end
-
-function Hop()
-    isHopping = true
-    AllIDs = {}
-    foundAnything = ""
-    
-    Crystal:Notify({
-        ["Title"] = "Crystal Hub",
-        ["Content"] = "Starting server hop...",
-        ["Logo"] = "rbxassetid://129781592728096",
-        ["Time"] = 3,
-        ["Delay"] = 0
-    })
-    
-    while isHopping do
-        local success = pcall(TPReturner)
-        if not success or foundAnything == "" then
-            foundAnything = ""
-            wait(2)
-        end
-        wait(1)
-    end
-end
-
-function getCharacter()
-    if not LocalPlayer.Character then
-        LocalPlayer.CharacterAdded:Wait()
-    end
-    LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-    return LocalPlayer.Character
-end
-
-function GetInventoryFruits()
-    local fruits = {}
-    local success, inventory = pcall(function()
-        return ReplicatedStorage.Remotes.CommF_:InvokeServer("getInventory")
-    end)
-    
-    if success and inventory then
-        for _, item in pairs(inventory) do
-            if item.Type == "Blox Fruit" then
-                local itemName = type(item.Name) == "table" and table.concat(item.Name, ", ") or item.Name
-                local displayName = FruitIdToName(itemName)
-                local serverName = itemName
-                
-                table.insert(fruits, {displayName, serverName})
-            end
-        end
-    end
-    
-    return fruits
-end
-
-C.Func.UpdateStatus = function(fruitStatus, collectStatus)
-    if C.UI.S2 then
-        C.UI.S2.Text = "Fruit: " .. (fruitStatus or "...") .. " | Collect: " .. (collectStatus or "...")
-    end
 end
 
 C.Webhook.GetFruitsInv = function()
@@ -2003,6 +1870,9 @@ C.Webhook.SendRaidCastle = function()
     end
 end
 
+C.Fruit.PendingFruits = {}
+C.Fruit.CollectedFruits = {}
+
 C.Fruit.ScanPendingFruits = function()
     C.Fruit.PendingFruits = {}
     for i, v in pairs(game.Workspace:GetChildren()) do
@@ -2039,6 +1909,83 @@ C.Fruit.CollectPendingFruits = function()
     end
 end
 
+function shuffle(tbl)
+    for i = #tbl, 2, -1 do
+        local j = math.random(i)
+        tbl[i], tbl[j] = tbl[j], tbl[i]
+    end
+end
+
+function TPReturner()
+    local Site
+    if foundAnything == "" then
+        Site = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100"))
+    else
+        Site = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100&cursor=" .. foundAnything))
+    end
+
+    if Site.nextPageCursor then
+        foundAnything = Site.nextPageCursor
+    end
+
+    local validServers = {}
+    
+    for _, v in ipairs(Site.data) do
+        if v.playing >= 3 and v.playing <= 11 and v.playing < v.maxPlayers then
+            table.insert(validServers, v)
+        end
+    end
+    
+    shuffle(validServers)
+
+    for _, v in ipairs(validServers) do
+        local ID = tostring(v.id)
+        if not table.find(AllIDs, ID) then
+            table.insert(AllIDs, ID)
+            wait(1)
+            TeleportService:TeleportToPlaceInstance(PlaceID, ID, LocalPlayer)
+            wait(1)
+            return true
+        end
+    end
+    
+    return false
+end
+
+function Hop()
+    isHopping = true
+    AllIDs = {}
+    foundAnything = ""
+    
+    C.Func.UpdateStatus("Hop Server!", "Searching...")
+    
+    Crystal:Notify({
+        ["Title"] = "Crystal Hub",
+        ["Content"] = "Starting server hop...",
+        ["Logo"] = "rbxassetid://129781592728096",
+        ["Time"] = 3,
+        ["Delay"] = 0
+    })
+    
+    while isHopping do
+        local success = pcall(TPReturner)
+        if not success or foundAnything == "" then
+            foundAnything = ""
+            wait(2)
+        end
+        wait(1)
+    end
+end
+
+game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+    if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+        TeleportService:Teleport(game.PlaceId)
+    end
+end)
+
+local factoryNotified = false
+local raidCastleNotified = false
+
 spawn(function()
     while wait(.1) do
         if getgenv().Setting["Auto Farm Fruit"] and not isAttackingFactory and not isAttackingRaidCastle then
@@ -2052,9 +1999,6 @@ spawn(function()
         end
     end
 end)
-
-local factoryNotified = false
-local raidCastleNotified = false
 
 spawn(function()
     while wait(0.1) do
@@ -2085,7 +2029,7 @@ spawn(function()
                     factoryNotified = true
                 end
                 fruitStatus = "None"
-                collectStatus = "Factory"
+                collectStatus = "Attack Factory"
             else
                 if factoryNotified and not hasFactory then
                     factoryNotified = false
@@ -2105,7 +2049,7 @@ spawn(function()
                     raidCastleNotified = true
                 end
                 fruitStatus = "None"
-                collectStatus = "Raid Castle"
+                collectStatus = "Attack Raid Castle"
             else
                 if raidCastleNotified and not hasRaidCastle then
                     raidCastleNotified = false
@@ -2176,20 +2120,6 @@ spawn(function()
         if getgenv().Setting["Auto Farm Fruit"] then
             pcall(function()
                 StoreFruit()
-                local fruits = GetInventoryFruits()
-                
-                for _, fruit in ipairs(fruits) do
-                    local fruitName, serverName = fruit[1], fruit[2]
-                    local tool = plr.Backpack:FindFirstChild(fruitName) 
-                        or plr.Character:FindFirstChild(fruitName)
-                        or plr.Backpack:FindFirstChild(serverName)
-                        or plr.Character:FindFirstChild(serverName)
-                    
-                    if tool then
-                        ReplicatedStorage.Remotes.CommF_:InvokeServer("StoreFruit", serverName, tool)
-                        task.wait(0.1)
-                    end
-                end
             end)
         end
     end
