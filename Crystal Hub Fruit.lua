@@ -822,13 +822,11 @@ C.Fruit.CollectPendingFruits = function()
                 C.Fruit.IsCollecting = true
                 C.Fruit.CollectFruits()
                 C.Webhook.SendFruit(fruitName)
-                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
                 C.Fruit.IsCollecting = false
             else
                 C.Fruit.IsCollecting = true
                 C.Fruit.CollectFruits()
-                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
                 C.Fruit.IsCollecting = false
             end
@@ -1468,11 +1466,9 @@ C.Fruit.CollectPendingFruits = function()
             if not C.Fruit.CheckFruitInInventory(fruitServerId) then
                 Tweento(fruitData.handle.CFrame)
                 C.Webhook.SendFruit(fruitName)
-                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
             else
                 Tweento(fruitData.handle.CFrame)
-                C.Func.UpdateStatus("Collecting: " .. fruitName)
                 wait(2)
             end
         end
@@ -1672,10 +1668,7 @@ spawn(function()
                             local fruitServerId = FruitNameToId(fruitName)
                             
                             if not C.Fruit.CheckFruitInInventory(fruitServerId) then
-                                C.Webhook.SendFruit(fruitName)
-                                C.Func.UpdateStatus("Collecting: " .. fruitName)
-                            else
-                                C.Func.UpdateStatus("Collecting: " .. fruitName)
+                                C.Webhook.SendFruit(fruitName)                           
                             end
                         end
                     end
@@ -1777,7 +1770,7 @@ spawn(function()
                     if not C.Fruit.CheckFruitInWorkspace() then
                         Crystal:Notify({
                             ["Title"] = "Crystal Hub",
-                            ["Content"] = "Factory completed! Collecting fruits...",
+                            ["Content"] = "Factory completed!...",
                             ["Logo"] = "rbxassetid://129781592728096",
                             ["Time"] = 3,
                             ["Delay"] = 2
@@ -1848,7 +1841,7 @@ spawn(function()
                         
                         Crystal:Notify({
                             ["Title"] = "Crystal Hub",
-                            ["Content"] = "Raid Castle completed! Collecting fruits...",
+                            ["Content"] = "Raid Castle completed!...",
                             ["Logo"] = "rbxassetid://129781592728096",
                             ["Time"] = 3,
                             ["Delay"] = 2
